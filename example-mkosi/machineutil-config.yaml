@@ -1,0 +1,54 @@
+---
+defaulttemplate: base
+machines:
+- fqdn: vault.dev.local
+  template: vault
+  creation:
+  - command:
+    - mkdir
+    - -p
+    - /etc/systemd/system/vault.service.d/
+  - command:
+    - dd
+    - of=/etc/systemd/system/vault.service.d/override.conf
+    stdin: |
+      [Service]
+      User=vault-dynamic
+      Group=vault-dynamic
+      DynamicUser=yes
+      StateDirectory=vault-dynamic
+      BindPaths=/var/lib/private/vault-dynamic:/var/lib/vault
+  - command:
+    - systemctl
+    - daemon-reload
+  - command:
+    - sed
+    - "-i"
+    - /#mlock/ s/^.*$/mlock=false/
+    - /etc/vault.hcl
+  - command:
+    - sed
+    - "-i"
+    - /#disable_mlock/ s/^.*$/disable_mlock=true/
+    - /etc/vault.hcl
+  - command:
+    - systemctl
+    - "--now"
+    - enable
+    - vault
+  commands:
+  - command:
+    - echo
+    local: true
+    appendfqdn: true
+    appendaddr: true
+    stdoutfile: addrs
+- fqdn: monitor.dev.local
+  commands:
+  - command:
+    - echo
+    local: true
+    appendfqdn: true
+    appendaddr: true
+    stdoutfile: addrs
+    stdoutappend: true
