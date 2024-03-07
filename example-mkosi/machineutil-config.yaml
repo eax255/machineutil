@@ -1,8 +1,8 @@
 ---
-defaulttemplate: base
+defaulttemplate: simple-base
 machines:
 - fqdn: vault.dev.local
-  template: vault
+  template: simple-vault
   creation:
   - command:
     - mkdir
