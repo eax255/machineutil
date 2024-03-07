@@ -37,7 +37,7 @@ func (m *Machine) EnsureOptions(log *slog.Logger, opts []*unit.UnitOption) (bool
 }
 
 func (m *Machine) EnsureOverride(log *slog.Logger, opts []*unit.UnitOption) (bool, error) {
-	file_path := "/etc/systemd/system/systemd-nspawn@"+m.Name+".service.d/machineutil.conf"
+	file_path := "/etc/systemd/system/systemd-nspawn@" + m.Name + ".service.d/machineutil.conf"
 	return util.EnsureUnit(log, file_path, opts)
 }
 

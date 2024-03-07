@@ -146,7 +146,7 @@ type CommandDescription struct {
 
 func (cmd *CommandDescription) Run(fqdn string, addrs []netip.Addr) (err error) {
 	if cmd.Mode == 0 {
-		cmd.Mode = 0700
+		cmd.Mode = 0600
 	}
 	args := []string{}
 	var wrapper *exec.Cmd
@@ -439,20 +439,25 @@ func (s *State) RemoveMachine(log *slog.Logger, config *Machine) error {
 }
 
 func main() {
+	configFile := flag.String("config", "-", "Config file to use")
+	mode := flag.String("mode", "create", "Mode to use: create, start, stop, destroy")
+	debug := flag.Bool("debug", false, "Enable debug log")
+	flag.Parse()
 	var err error
+	log_options := &slog.HandlerOptions{
+		Level: slog.LevelInfo,
+	}
+	if *debug {
+		log_options.Level = slog.LevelDebug
+	}
 	slog.SetDefault(
 		slog.New(
 			slog.NewTextHandler(
 				os.Stderr,
-				&slog.HandlerOptions{
-					Level: slog.LevelDebug,
-				},
+				log_options,
 			),
 		),
 	)
-	configFile := flag.String("config", "-", "Config file to use")
-	mode := flag.String("mode", "create", "Mode to use: create, start, stop, destroy")
-	flag.Parse()
 	switch *mode {
 	case "create", "start", "stop", "destroy":
 	default:
